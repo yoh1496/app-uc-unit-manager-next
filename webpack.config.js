@@ -27,10 +27,11 @@ module.exports = {
     filename: 'bundle.js',
   },
   devServer: {
-    contentBase: `${__dirname}/tools`,
+    contentBase: `${__dirname}/tools/old`,
+    contentBasePublicPath: '/__/html/',
     publicPath: '/__/public/',
     historyApiFallback: {
-      rewrites: [{ from: '/', to: '/dev_index.html' }],
+      rewrites: [{ from: /^\/$/, to: '/environment.html' }],
     },
   },
 };
