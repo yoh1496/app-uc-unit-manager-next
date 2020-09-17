@@ -17,20 +17,31 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [{ loader: 'ts-loader' }],
+      },
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: 'source-map-loader',
+      },
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
   },
   output: {
     path: path.resolve(__dirname, 'build/public'),
     filename: 'bundle.js',
   },
   devServer: {
-    contentBase: `${__dirname}/tools`,
+    contentBase: `${__dirname}/tools/old`,
+    contentBasePublicPath: '/__/html/',
     publicPath: '/__/public/',
     historyApiFallback: {
-      rewrites: [{ from: '/', to: '/dev_index.html' }],
+      rewrites: [{ from: /^\/$/, to: '/environment.html' }],
     },
   },
 };
