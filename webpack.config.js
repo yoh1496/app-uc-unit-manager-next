@@ -17,10 +17,20 @@ module.exports = {
           },
         ],
       },
+      {
+        test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
+        use: [{ loader: 'ts-loader' }],
+      },
+      {
+        enforce: 'pre',
+        test: /\.js$/,
+        loader: 'source-map-loader',
+      },
     ],
   },
   resolve: {
-    extensions: ['*', '.js', '.jsx'],
+    extensions: ['*', '.js', '.jsx', '.ts', '.tsx'],
   },
   output: {
     path: path.resolve(__dirname, 'build/public'),
@@ -32,6 +42,11 @@ module.exports = {
     publicPath: '/__/public/',
     historyApiFallback: {
       rewrites: [{ from: /^\/$/, to: '/environment.html' }],
+    },
+    host: '0.0.0.0',
+    disableHostCheck: true,
+    watchOptions: {
+      ignored: /node_modules/,
     },
   },
 };
