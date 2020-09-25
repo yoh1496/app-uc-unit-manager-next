@@ -13,35 +13,8 @@ import {
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { BoxExplorer } from './BoxExplorer';
-
-export class PersoniumCellUrl {
-  private _cellUrl: string;
-  private _cellName: string;
-  private _unitFQDN: string;
-
-  constructor(cellUrl: string) {
-    this._cellUrl = cellUrl;
-    // https://<cellName>.<unitUrl>/
-    const cellfqdn = cellUrl.split('/')[2];
-    this._cellName = cellfqdn.split('.')[0];
-    this._unitFQDN = cellfqdn
-      .split('.')
-      .slice(1)
-      .join('.');
-  }
-
-  get CellName(): string {
-    return this._cellName;
-  }
-
-  get UnitFQDN(): string {
-    return this._unitFQDN;
-  }
-
-  toString(): string {
-    return this._cellUrl;
-  }
-}
+import { PersoniumCellUrl } from './lib/Personium/common';
+import { Link, Switch, Route, Redirect, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -84,6 +57,11 @@ function useTogglableState(defaultValue: boolean): [boolean, () => void] {
   return [flag, toggleFlag];
 }
 
+function Menu404() {
+  const match = useLocation();
+  return <div>{match.pathname} does not match any routes.</div>;
+}
+
 export const CellManager: React.FC<CellManagerProps> = ({ cellUrl }) => {
   const classes = useStyles();
   const [mode] = useState(1);
@@ -99,13 +77,13 @@ export const CellManager: React.FC<CellManagerProps> = ({ cellUrl }) => {
           {cellUrl.CellName}
         </Typography>
         <List component="nav" aria-label="">
-          <ListItem button>
+          <ListItem button component={Link} to="/box">
             <ListItemText primary="Box" />
           </ListItem>
-          <ListItem button>
+          <ListItem button component={Link} to="/role">
             <ListItemText primary="Role" />
           </ListItem>
-          <ListItem button>
+          <ListItem button component={Link} to="/account">
             <ListItemText primary="Account" />
           </ListItem>
 
@@ -115,13 +93,28 @@ export const CellManager: React.FC<CellManagerProps> = ({ cellUrl }) => {
           </ListItem>
           <Collapse in={openSocialMenu} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/extcell"
+              >
                 <ListItemText primary="External Cell" />
               </ListItem>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/relation"
+              >
                 <ListItemText primary="Relation" />
               </ListItem>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/extrole"
+              >
                 <ListItemText primary="External Role" />
               </ListItem>
             </List>
@@ -134,10 +127,20 @@ export const CellManager: React.FC<CellManagerProps> = ({ cellUrl }) => {
 
           <Collapse in={openMessageMenu} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/received_message"
+              >
                 <ListItemText primary="Received" />
               </ListItem>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/sent_message"
+              >
                 <ListItemText primary="Sent" />
               </ListItem>
             </List>
@@ -149,25 +152,43 @@ export const CellManager: React.FC<CellManagerProps> = ({ cellUrl }) => {
           </ListItem>
           <Collapse in={openEventMenu} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/event_log"
+              >
                 <ListItemText primary="Log" />
               </ListItem>
-              <ListItem button className={classes.nested}>
+              <ListItem
+                button
+                className={classes.nested}
+                component={Link}
+                to="/event_rule"
+              >
                 <ListItemText primary="Rule" />
               </ListItem>
             </List>
           </Collapse>
 
-          <ListItem button>
+          <ListItem button component={Link} to="/snapshot">
             <ListItemText primary="Snapshot" />
           </ListItem>
-          <ListItem button>
+          <ListItem button component={Link} to="/info">
             <ListItemText primary="Info" />
           </ListItem>
         </List>
       </Drawer>
       <div className={classes.content}>
-        {mode === 1 ? <BoxExplorer /> : null}
+        <Switch>
+          <Route path="/box">
+            <BoxExplorer cellUrl={cellUrl} />
+          </Route>
+          <Redirect from="/" exact to="/box" />
+          <Route>
+            <Menu404 />
+          </Route>
+        </Switch>
       </div>
     </div>
   );

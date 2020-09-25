@@ -16,7 +16,8 @@ import { HashRouter, Switch, Route, Link } from 'react-router-dom';
 // import { PersoniumBoxProvider } from './lib/Personium/Context/PersoniumBox';
 
 import { CellManager } from './CellManager';
-import { PersoniumCellUrl } from './CellManager';
+import { AppAuthProvider, useAppAuth } from './AppAuthProvider';
+import { PersoniumCellUrl } from './lib/Personium/common';
 
 import {
   Drawer,
@@ -25,6 +26,7 @@ import {
   Typography,
   makeStyles,
 } from '@material-ui/core';
+import { useAppConfig, AppConfigProvider } from './AppConfig';
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -137,8 +139,26 @@ function AppFooter() {
   );
 }
 
-// function AppInitializer({ handleInitialized }) {
-//   const { setConfig } = usePersoniumConfig();
+const AppInitializer: React.FC<{
+  handleInitialized: (initialized: boolean) => void;
+}> = ({ handleInitialized }) => {
+  const { setConfig } = useAppConfig();
+  useEffect(() => {
+    setConfig({
+      targetCell: new PersoniumCellUrl(
+        localStorage.getItem('targetCell') || ''
+      ),
+      user: localStorage.getItem('cellUsername') || '',
+      password: localStorage.getItem('cellPassword') || '',
+    });
+    handleInitialized(true);
+  });
+  return null;
+};
+
+AppInitializer.propTypes = {
+  handleInitialized: PropTypes.func.isRequired,
+};
 
 //   useEffect(() => {
 //     // Boot Script
@@ -175,8 +195,35 @@ function AppFooter() {
 //   return null;
 // }
 
-export function App() {
-  // const [initialized, setInitialized] = useState(false);
+const AuthenticatedPart: React.FC = ({ children }) => {
+  const { config } = useAppConfig();
+  const { auth, authWithROPC } = useAppAuth();
+  const [authenticated, setAuthenticated] = useState(false);
+
+  useEffect(() => {
+    console.log(config);
+    if (
+      !config ||
+      config.targetCell === null ||
+      config.user === null ||
+      config.password === null
+    )
+      return;
+
+    authWithROPC(config.targetCell, config.user, config.password).then(() => {
+      setAuthenticated(true);
+    });
+  }, [setAuthenticated, authWithROPC, config]);
+
+  return <>{authenticated ? children : <div>Authentication is needed</div>}</>;
+};
+
+AuthenticatedPart.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export const App: React.FC = () => {
+  const [initialized, setInitialized] = useState(false);
 
   const [open, setOpen] = React.useState(false);
 
@@ -184,12 +231,32 @@ export function App() {
     setOpen(c => !c);
   }, [setOpen]);
 
+  const handleInitialized = useCallback(
+    initialized => {
+      setInitialized(initialized);
+    },
+    [setInitialized]
+  );
+
   return (
-    <HashRouter>
-      <AppHeader toggleAuthDrawer={handleDrawerToggle} />
-      <AppContent />
-      <AuthInfo open={open} />
-    </HashRouter>
+    <AppConfigProvider>
+      <AppAuthProvider>
+        {!initialized ? (
+          <>
+            <AppInitializer handleInitialized={handleInitialized} />
+            <div>Initializing...</div>
+          </>
+        ) : (
+          <HashRouter>
+            <AuthenticatedPart>
+              <AppHeader toggleAuthDrawer={handleDrawerToggle} />
+              <AppContent />
+              <AuthInfo open={open} />
+            </AuthenticatedPart>
+          </HashRouter>
+        )}
+      </AppAuthProvider>
+    </AppConfigProvider>
   );
 
   // return (
@@ -228,4 +295,4 @@ export function App() {
   //     )}
   //   </PersoniumConfigProvider>
   // );
-}
+};

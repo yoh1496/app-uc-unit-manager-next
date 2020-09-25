@@ -13,7 +13,9 @@ import {
   TableContainer,
   Typography,
   createStyles,
+  Link as MUILink,
 } from '@material-ui/core';
+import { GetBoxListResult, BoxItem } from './lib/Personium/box';
 
 const useStyles = makeStyles(theme => ({
   paper: {},
@@ -363,10 +365,76 @@ BoxListToolbar.propTypes = {
   numSelected: PropTypes.number.isRequired,
 };
 
-export const BoxListView: React.FC = () => {
+const BoxListItemView: React.FC<{
+  checked: boolean;
+  onItemChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    checked: boolean
+  ) => void;
+  onItemClicked: (boxName: string) => void;
+  boxDat: BoxItem;
+}> = ({ checked, onItemChange, boxDat, onItemClicked }) => {
+  const handleItemClicked = useCallback(
+    (
+      event: React.MouseEvent<HTMLButtonElement & HTMLAnchorElement, MouseEvent>
+    ) => {
+      onItemClicked(event.currentTarget.name);
+    },
+    [onItemClicked]
+  );
+  return (
+    <TableRow hover role="checkbox" tabIndex={-1} selected={checked}>
+      <TableCell padding="checkbox">
+        <Checkbox
+          checked={checked}
+          onChange={onItemChange}
+          name={boxDat.Name}
+        />
+      </TableCell>
+      <TableCell>
+        <MUILink
+          color="inherit"
+          onClick={handleItemClicked}
+          component="button"
+          name={boxDat.Name}
+        >
+          {boxDat.Name}
+        </MUILink>
+      </TableCell>
+      <TableCell>{boxDat.Schema || '-'}</TableCell>
+      <TableCell>{boxDat.__updated}</TableCell>
+      <TableCell>Installation Status</TableCell>
+    </TableRow>
+  );
+};
+
+const BoxListItemPropTypes = PropTypes.shape({
+  Name: PropTypes.string.isRequired,
+  Schema: PropTypes.string.isRequired,
+  __metadata: PropTypes.shape({
+    uri: PropTypes.string.isRequired,
+    etag: PropTypes.string.isRequired,
+    type: PropTypes.string.isRequired,
+  }).isRequired,
+  __published: PropTypes.string.isRequired,
+  __updated: PropTypes.string.isRequired,
+});
+
+BoxListItemView.propTypes = {
+  checked: PropTypes.bool.isRequired,
+  onItemChange: PropTypes.func.isRequired,
+  onItemClicked: PropTypes.func.isRequired,
+  boxDat: BoxListItemPropTypes.isRequired,
+};
+
+type BoxListViewProps = {
+  boxes: GetBoxListResult;
+  onOpen: (boxName: string) => void;
+};
+
+export const BoxListView: React.FC<BoxListViewProps> = ({ boxes, onOpen }) => {
   const classes = useStyles();
 
-  const [listBox] = useState(sampleDat.d.results);
   const [selected, setSelected] = useState(new Set<string>());
   const numSelected = selected.size;
 
@@ -408,30 +476,17 @@ export const BoxListView: React.FC = () => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {listBox.map(boxDat => {
+            {boxes.d.results.map(boxDat => {
               const checked = selected.has(boxDat.Name);
               const key = `tbl-box-item-${boxDat.Name}`;
-              const name = boxDat.Name;
               return (
-                <TableRow
-                  hover
-                  role="checkbox"
-                  tabIndex={-1}
-                  selected={checked}
+                <BoxListItemView
+                  checked={checked}
                   key={key}
-                >
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      checked={checked}
-                      onChange={handleItemChange}
-                      name={name}
-                    />
-                  </TableCell>
-                  <TableCell>{name}</TableCell>
-                  <TableCell>{boxDat.Schema || '-'}</TableCell>
-                  <TableCell>{boxDat.__updated}</TableCell>
-                  <TableCell>Installation Status</TableCell>
-                </TableRow>
+                  boxDat={boxDat}
+                  onItemChange={handleItemChange}
+                  onItemClicked={onOpen}
+                />
               );
             })}
           </TableBody>
@@ -450,4 +505,14 @@ export const BoxListView: React.FC = () => {
       </TableContainer>
     </Paper>
   );
+};
+
+BoxListView.propTypes = {
+  boxes: PropTypes.shape({
+    d: PropTypes.shape({
+      results: PropTypes.arrayOf(BoxListItemPropTypes.isRequired).isRequired,
+      __count: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+  onOpen: PropTypes.func.isRequired,
 };

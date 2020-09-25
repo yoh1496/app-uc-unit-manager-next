@@ -43,5 +43,10 @@ module.exports = {
     historyApiFallback: {
       rewrites: [{ from: /^\/$/, to: '/environment.html' }],
     },
+    host: '0.0.0.0',
+    disableHostCheck: true,
+    watchOptions: {
+      ignored: /node_modules/,
+    },
   },
 };

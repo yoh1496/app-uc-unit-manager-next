@@ -1,35 +1,7 @@
-import { useCallback, useState } from 'react';
-import { string } from 'prop-types';
+import { useCallback, useState, useEffect } from 'react';
 
-interface PersoniumCellUrl {
-  cellName: string;
-  unitUrl: string;
-}
-
-interface GetBoxListResult {
-  d: BoxList;
-}
-
-interface BoxList {
-  results: Array<BoxItem>;
-  __count: string;
-}
-
-type PersoniumDate = string;
-
-export interface BoxItem {
-  __metadata: BoxMetadata;
-  __published: PersoniumDate;
-  __updated: PersoniumDate;
-  Name: string;
-  Schema: string | null;
-}
-
-interface BoxMetadata {
-  uri: string;
-  etag: string;
-  type: string;
-}
+import { getBoxList, GetBoxListResult } from '../box';
+import { PersoniumCellUrl } from '../common';
 
 export function useGetBoxList(
   cellUrl: PersoniumCellUrl,
@@ -37,22 +9,24 @@ export function useGetBoxList(
 ): {
   status: string;
   error: string;
-  getBoxList: () => Promise<GetBoxListResult>;
+  loading: boolean;
+  boxes: null | GetBoxListResult;
 } {
   const [status] = useState('');
+  const [boxes, setBoxes] = useState<null | GetBoxListResult>(null);
   const [error] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const getBoxList = useCallback(async () => {
-    const res = await fetch(`${cellUrl}__ctl/Box`, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${access_token}`,
-        Accept: 'application/json',
-      },
-    });
+  useEffect(() => {
+    setLoading(true);
+    (async () => {
+      const res = await getBoxList(cellUrl, access_token);
+      setBoxes(res);
+      setLoading(false);
+    })();
 
-    const jsonData = await res.json();
-    return jsonData as GetBoxListResult;
-  }, [cellUrl, access_token]);
-  return { status, error, getBoxList };
+    return;
+  }, []);
+
+  return { status, error, loading, boxes };
 }
