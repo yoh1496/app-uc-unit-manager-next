@@ -13,7 +13,7 @@ import {
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import { BoxExplorer } from './BoxExplorer';
-import { PersoniumCellUrl } from './lib/Personium/common';
+import { PersoniumCellUrl } from 'personium-sdk-ts';
 import { Link, Switch, Route, Redirect, useLocation } from 'react-router-dom';
 
 const drawerWidth = 240;

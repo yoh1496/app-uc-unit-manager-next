@@ -1,7 +1,10 @@
 import { useCallback, useState, useEffect } from 'react';
 
-import { getBoxList, GetBoxListResult } from '../box';
-import { PersoniumCellUrl } from '../common';
+import {
+  getBoxList,
+  GetBoxListResult,
+  PersoniumCellUrl,
+} from 'personium-sdk-ts';
 
 export function useGetBoxList(
   cellUrl: PersoniumCellUrl,

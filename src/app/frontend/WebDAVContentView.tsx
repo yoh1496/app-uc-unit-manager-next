@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { getProperties } from './lib/Personium/webdav';
-import { useAppConfig } from './AppConfig';
-import { useAppAuth } from './AppAuthProvider';
 import {
+  getProperties,
   PersoniumBoxUrl,
   PersoniumWebDAVContentUrl,
-} from './lib/Personium/common';
+} from 'personium-sdk-ts';
+import { useAppConfig } from './AppConfig';
+import { useAppAuth } from './AppAuthProvider';
 import { useWebDAVExplorerContext } from './WebDAVExplorerContext';
 
 export const WebDAVContentView: React.FC<{ boxUrl: PersoniumBoxUrl }> = ({

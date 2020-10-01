@@ -1,25 +1,13 @@
 import React, { useEffect, useMemo, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import {
-  Paper,
-  makeStyles,
-  Toolbar,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  Checkbox,
-  TableBody,
-  TableContainer,
-} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core';
 import { BoxListView } from './BoxListView';
 import { useAppAuth } from './AppAuthProvider';
 import { useGetBoxList } from './lib/Personium/Util/usePersoniumBox';
 import { useAppConfig } from './AppConfig';
 import { BoxManager } from './BoxManager';
 import { useRouteMatch, useHistory, Route } from 'react-router-dom';
-import { PersoniumBoxUrl, PersoniumCellUrl } from './lib/Personium/common';
-import { checkPropTypes } from 'prop-types';
+import { PersoniumBoxUrl, PersoniumCellUrl } from 'personium-sdk-ts';
 
 const useStyles = makeStyles(theme => ({
   hidden: {

@@ -1,6 +1,6 @@
 import React, { useState, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
-import { PersoniumCellUrl } from './lib/Personium/common';
+import { PersoniumCellUrl } from 'personium-sdk-ts';
 
 type AppConfig = {
   targetCell: null | PersoniumCellUrl;

@@ -15,7 +15,7 @@ import {
   createStyles,
   Link as MUILink,
 } from '@material-ui/core';
-import { GetBoxListResult, BoxItem } from './lib/Personium/box';
+import { GetBoxListResult, BoxItem } from 'personium-sdk-ts';
 
 const useStyles = makeStyles(theme => ({
   paper: {},

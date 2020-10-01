@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useRouteMatch } from 'react-router-dom';
-import { PersoniumBoxUrl } from './lib/Personium/common';
+import { PersoniumBoxUrl } from 'personium-sdk-ts';
 import { WebDAVExplorerContextProvider } from './WebDAVExplorerContext';
 import { WebDAVNavi } from './WebDAVNavi';
 import { WebDAVContentView } from './WebDAVContentView';

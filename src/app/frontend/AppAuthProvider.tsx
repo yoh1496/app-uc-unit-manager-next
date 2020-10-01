@@ -1,8 +1,11 @@
 import React, { useState, useContext, useCallback } from 'react';
 import PropTypes from 'prop-types';
 
-import { authWithROPC, PersoniumToken } from './lib/Personium/auth';
-import { PersoniumCellUrl } from './lib/Personium/common';
+import {
+  PersoniumCellUrl,
+  PersoniumToken,
+  authWithROPC,
+} from 'personium-sdk-ts';
 
 type AppAuth = {
   token: null | PersoniumToken;

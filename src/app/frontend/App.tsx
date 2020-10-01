@@ -17,7 +17,7 @@ import { HashRouter, Switch, Route, Link } from 'react-router-dom';
 
 import { CellManager } from './CellManager';
 import { AppAuthProvider, useAppAuth } from './AppAuthProvider';
-import { PersoniumCellUrl } from './lib/Personium/common';
+import { PersoniumCellUrl } from 'personium-sdk-ts';
 
 import {
   Drawer,

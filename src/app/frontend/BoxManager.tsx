@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { Typography } from '@material-ui/core';
-import { PersoniumBoxUrl } from './lib/Personium/common';
+import { PersoniumBoxUrl } from 'personium-sdk-ts';
 import { WebDAVExplorer } from './WebDAVExplorer';
 
 export const BoxManager: React.FC<{ boxUrl: PersoniumBoxUrl }> = ({
